@@ -1,0 +1,131 @@
+.preview-panel{
+    background: linear-gradient(180deg, rgba(255,106,0,0.05), rgba(0,0,0,0)), #121216;
+    border: 1px solid #2a2a33;
+    border-radius: 16px;
+    padding: 14px;
+  }
+  
+  .preview-title{
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+    color: #ffd7bf;
+  }
+  
+  .preview-card{
+    background: #0f0f13;
+    border: 1px solid #23232d;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .preview-head{
+    font-weight: 900;
+    color: #ffb07a;
+    margin-bottom: 8px;
+  }
+  
+  .preview-body{
+    color: #f4f4f6;
+    white-space: pre-wrap;
+    line-height: 1.35;
+  }
+  
+  .preview-body.muted{
+    color: #9b9bac;
+  }
+  
+  .drawer{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: grid;
+    place-items: center;
+    z-index: 100;
+  }
+  
+  .drawer-inner{
+    width: min(900px, 92vw);
+    max-height: 80vh;
+    overflow: auto;
+    background: #0f0f13;
+    border: 1px solid #2a2a33;
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(255,106,0,0.15);
+  }
+  
+  .drawer-head{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #2a2a33;
+  }
+  
+  .drawer-title{
+    font-weight: 900;
+    color: #ffd7bf;
+  }
+  
+  .drawer-close{
+    background: transparent;
+    border: 0;
+    color: #fff;
+    cursor:pointer;
+    font-size: 18px;
+    padding: 8px 10px;
+    border-radius: 10px;
+  }
+  .drawer-close:hover{
+    background: rgba(255,106,0,0.12);
+  }
+  
+  .variations-list{
+    padding: 14px 16px 18px;
+    display: grid;
+    gap: 12px;
+  }
+  
+  .var-card{
+    border: 1px solid #2a2a33;
+    border-radius: 14px;
+    padding: 12px;
+    background: rgba(255,106,0,0.04);
+  }
+  
+  .var-top{
+    display:flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .var-label{
+    font-weight: 900;
+    color: #ffb07a;
+  }
+  .var-tone{
+    color: #c8c8d6;
+    font-size: 13px;
+  }
+  
+  .var-body{
+    color: #f4f4f6;
+    line-height: 1.35;
+    white-space: pre-wrap;
+  }
+
+  /* Drawer defaults to OFF */
+  .drawer {
+    display: none !important;
+  }
+
+  /* Drawer ON */
+  .drawer.is-open {
+    display: flex !important;
+  }
+
+  /* Optional: prevent background scroll while open */
+  .no-scroll { overflow: hidden; }
+
+  

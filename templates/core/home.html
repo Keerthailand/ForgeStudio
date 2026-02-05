@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ForgeStudio{% endblock %}
+
+{% block content %}
+<section class="home-hero">
+  <div class="home-hero-inner">
+    <div class="home-hero-copy">
+      <div class="badge">
+        ⚒️ The Content Forge
+      </div>
+
+      <h1>
+        Forge Your Next
+        <span class="glow">Legendary</span>
+        Post
+      </h1>
+
+      <p>
+        ForgeStudio turns raw ideas into platform-ready content — posts, rewrites, scripts, and strategy —
+        all shaped in a fantasy blacksmith’s forge.
+      </p>
+
+      <div class="home-cta-row">
+        <a class="btn btn-primary" href="{% url 'posting' %}">Start Forging</a>
+        <a class="btn btn-ghost" href="#forge-features">See the Tools</a>
+      </div>
+
+      <div class="home-stats">
+        <div class="stat">
+          <div class="stat-num">🔥</div>
+          <div class="stat-label">Fiery UI</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">⚡</div>
+          <div class="stat-label">Fast Workflow</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">🧠</div>
+          <div class="stat-label">AI Strategy</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-hero-panel">
+      <div class="metal-card">
+        <div class="metal-card-top">
+          <div class="metal-dot"></div>
+          <div class="metal-dot"></div>
+          <div class="metal-dot"></div>
+          <span class="metal-title">Inside the Forge</span>
+        </div>
+
+        <div class="metal-card-body">
+          <div class="forge-line">
+            <span class="forge-key">Input</span>
+            <span class="forge-val">Raw idea → Prompt</span>
+          </div>
+          <div class="forge-line">
+            <span class="forge-key">Heat</span>
+            <span class="forge-val">Tone + structure</span>
+          </div>
+          <div class="forge-line">
+            <span class="forge-key">Hammer</span>
+            <span class="forge-val">Platform formatting</span>
+          </div>
+          <div class="forge-line">
+            <span class="forge-key">Quench</span>
+            <span class="forge-val">Final polish + variants</span>
+          </div>
+
+          <div class="home-mini-note">
+            Built for Instagram, X, Facebook, LinkedIn — and whatever you’re crafting next.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-hero-gradient" aria-hidden="true"></div>
+</section>
+
+<section id="forge-features" class="home-features">
+  <h2>Choose Your Tool</h2>
+  <p class="home-subtitle">Each tool has a single job — and does it exceptionally well.</p>
+
+  <div class="feature-grid">
+    <a class="feature-card" href="{% url 'posting' %}">
+      <div class="feature-icon">🔥</div>
+      <div class="feature-title">Posting</div>
+      <div class="feature-desc">Generate original posts + visuals with platform previews.</div>
+    </a>
+
+    <a class="feature-card" href="{% url 'improve' %}">
+      <div class="feature-icon">🛠</div>
+      <div class="feature-title">Improve</div>
+      <div class="feature-desc">Rewrite and sharpen your existing content with variants.</div>
+    </a>
+
+    <a class="feature-card" href="{% url 'videoscript' %}">
+      <div class="feature-icon">🎬</div>
+      <div class="feature-title">Script</div>
+      <div class="feature-desc">Short-form (1 min) or long-form (5 min) structured scripts.</div>
+    </a>
+
+    <a class="feature-card" href="{% url 'anvil' %}">
+      <div class="feature-icon">⚒</div>
+      <div class="feature-title">Anvil</div>
+      <div class="feature-desc">Friendly creative advisor that guides your next move.</div>
+    </a>
+
+    <a class="feature-card feature-card-forge" href="{% url 'forge' %}">
+      <div class="feature-icon">🜂</div>
+      <div class="feature-title">Forge Mode</div>
+      <div class="feature-desc">Brainstorm or plan with button-based strategic flows.</div>
+    </a>
+  </div>
+</section>
+
+<section class="home-footer">
+  <div class="home-footer-inner">
+    <div>
+      <h3>Ready to craft something epic?</h3>
+      <p>Bring an idea — ForgeStudio handles the heat, structure, and polish.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'posting' %}">Forge a Post</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Script | ForgeStudio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+<link rel="stylesheet" href="{% static 'css/videoscript.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+  <header class="tool-header">
+    <h1>Script</h1>
+    <p>Forge structured video scripts: short-form (1 min) or long-form (5 min).</p>
+  </header>
+
+  <div class="videoscript-grid">
+    <div class="chat-panel">
+      <div id="chatWindow" class="chat-window" aria-live="polite">
+        <div class="msg msg-bot">
+          <div class="msg-meta">ForgeStudio • VideoScript</div>
+          <div class="msg-bubble">
+            Tell me your topic, pick a length, and I’ll forge a script with HOOK / BODY / CTA.
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-controls">
+        <div class="input-stack">
+          <div class="input-wrap">
+            <input id="topicInput" class="chat-input" placeholder="Topic (e.g., 'how to pick a mortgage')" />
+          </div>
+
+          <div class="select-row">
+            <select id="lengthSelect" class="select">
+              <option value="short">Short-form (1 min)</option>
+              <option value="long">Long-form (5 min)</option>
+            </select>
+
+            <select id="platformSelect" class="select">
+              <option value="">Platform (optional)</option>
+              <option value="instagram">Instagram</option>
+              <option value="tiktok">TikTok</option>
+              <option value="youtube">YouTube</option>
+              <option value="linkedin">LinkedIn</option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button id="btnGenerate" class="btn btn-primary">Generate Script</button>
+            <a id="btnDownload" class="btn btn-secondary" href="/script/download/" aria-disabled="true">Download</a>
+          </div>
+
+          <div class="loader-wrap" hidden id="loaderWrap">
+            <div class="loader-label">Forging script…</div>
+            <div class="loader-bar">
+              <div class="loader-fill" id="loaderFill"></div>
+            </div>
+          </div>
+
+          <div id="errorBar" class="error-bar" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="script-panel">
+      <div class="script-title">Script Output</div>
+      <pre id="scriptOutput" class="script-output muted">Generate to see your script here.</pre>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/videoscript.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Anvil | ForgeStudio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+<link rel="stylesheet" href="{% static 'css/anvil.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+  <header class="tool-header">
+    <h1>Anvil</h1>
+    <p>Your creative director — calm, strategic, and conversational.</p>
+  </header>
+
+  <div class="anvil-grid">
+    <div class="chat-panel">
+      <div id="chatWindow" class="chat-window" aria-live="polite"></div>
+
+      <div class="chat-controls">
+        <div class="input-wrap">
+          <input id="msgInput" class="chat-input" placeholder="Tell me what you're trying to create..." autocomplete="off" />
+        </div>
+
+        <div class="btn-row">
+          <button id="btnSend" class="btn btn-primary">Send</button>
+          <button id="btnReset" class="btn btn-secondary">Reset</button>
+        </div>
+
+        <div id="errorBar" class="error-bar" hidden></div>
+      </div>
+    </div>
+
+    <aside class="anvil-side">
+      <div class="side-title">Quiet Guidance</div>
+      <div class="side-note">
+        Anvil won’t write final content — it helps you choose the right tool and shape your approach.
+      </div>
+
+      <div class="hint-card">
+        <div class="hint-title">Quick prompts</div>
+        <div class="hint-buttons">
+          <button class="pill" data-q="I need a post idea for Instagram about my product.">Post idea</button>
+          <button class="pill" data-q="I have a draft but it’s messy. Help me fix it.">Improve draft</button>
+          <button class="pill" data-q="I want a 1-minute video about a topic. Help me plan it.">Video plan</button>
+          <button class="pill" data-q="I need a weekly content strategy.">Strategy</button>
+        </div>
+      </div>
+
+      <div id="suggestionBox" class="suggestion" hidden></div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/anvil.js' %}"></script>
+{% endblock %}

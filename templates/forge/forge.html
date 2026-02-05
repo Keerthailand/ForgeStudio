@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Forge Mode | ForgeStudio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forge.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+  <header class="tool-header">
+    <h1>Forge Mode</h1>
+    <p>Your strategic workshop: discover what to make next — then build a plan.</p>
+  </header>
+
+  <div class="forge-intro">
+    <div class="forge-card">
+      <div class="forge-card-title">Brainstorm</div>
+      <div class="forge-card-desc">
+        Button-based questions that help you discover the best content type, tone, and platform —
+        then recommends the next ForgeStudio tool.
+      </div>
+      <a class="btn btn-primary" href="{% url 'forge_brainstorm' %}">Start Brainstorm</a>
+    </div>
+
+    <div class="forge-card">
+      <div class="forge-card-title">Plan</div>
+      <div class="forge-card-desc">
+        Button-based diagnostic flow focused on marketing goals, SEO direction, and posting cadence —
+        outputs a high-level plan (not content).
+      </div>
+      <a class="btn btn-primary" href="{% url 'forge_plan' %}">Start Plan</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

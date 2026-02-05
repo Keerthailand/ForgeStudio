@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Improve | ForgeStudio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+<link rel="stylesheet" href="{% static 'css/improve.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+  <header class="tool-header">
+    <h1>Improve</h1>
+    <p>Rewrite, polish, and upgrade your content — with 3 variants + visuals.</p>
+  </header>
+
+  <div class="improve-grid">
+    <!-- LEFT: Chat -->
+    <div class="chat-panel">
+      <div id="chatWindow" class="chat-window" aria-live="polite">
+        <div class="msg msg-bot">
+          <div class="msg-meta">ForgeStudio • Improve</div>
+          <div class="msg-bubble">
+            Drop your text or upload a file — and tell me what you want improved (tone, clarity, persuasion, etc.).
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-controls">
+        <div class="input-stack">
+          <div class="input-wrap">
+            <textarea id="contentInput" class="chat-textarea" rows="4"
+              placeholder="Paste content here..."></textarea>
+          </div>
+
+          <div class="input-wrap">
+            <input id="goalInput" class="chat-input" placeholder="Goal (optional): e.g., make it more professional / more persuasive" />
+          </div>
+
+          <div class="upload-row">
+            <label class="file-pill">
+              <input id="fileInput" type="file" />
+              <span>Upload File</span>
+            </label>
+            <span id="fileName" class="file-name">No file selected</span>
+          </div>
+
+          <div class="btn-row">
+            <button id="btnImprove" class="btn btn-primary">Improve</button>
+            <button id="btnShowVariants" class="btn btn-secondary" disabled>Show Variants</button>
+          </div>
+
+          <div id="errorBar" class="error-bar" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Variants Summary -->
+    <aside class="improve-side">
+      <div class="side-title">Your Improved Options</div>
+      <div class="side-note">After improving, you can pick Version A/B/C and copy it instantly.</div>
+
+      <div id="sideCards" class="side-cards">
+        <div class="side-card muted">Run Improve to see options here.</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Variations Drawer -->
+  <div id="variantsDrawer" class="drawer" hidden>
+    <div class="drawer-inner">
+      <div class="drawer-head">
+        <div class="drawer-title">Improved Variants</div>
+        <button id="btnCloseDrawer" class="drawer-close">✕</button>
+      </div>
+      <div id="variantsList" class="variations-list"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/improve.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Posting | ForgeStudio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+<link rel="stylesheet" href="{% static 'css/posting.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+  <header class="tool-header">
+    <h1>Posting</h1>
+    <p>Forge original posts and visuals — with platform previews.</p>
+  </header>
+
+  <div class="tool-grid">
+    <!-- LEFT: Chat -->
+    <div class="chat-panel">
+      <div id="chatWindow" class="chat-window" aria-live="polite">
+        <div class="msg msg-bot">
+          <div class="msg-meta">ForgeStudio • Posting</div>
+          <div class="msg-bubble">
+            Welcome to the forge 🔥<br>
+            What are we crafting today?
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-controls">
+        <div class="input-wrap">
+          <input id="promptInput" class="chat-input" placeholder="Describe your post idea..." autocomplete="off" />
+        </div>
+
+        <div class="btn-row">
+          <button id="btnGenerate" class="btn btn-primary">Generate</button>
+          <button id="btnVariations" class="btn btn-secondary" type="button">Variations</button>
+        </div>
+
+        <div id="errorBar" class="error-bar" hidden></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Platform previews -->
+    <aside class="preview-panel">
+      <div class="preview-title">Platform Previews</div>
+
+      <div class="preview-card">
+        <div class="preview-head">Instagram</div>
+        <div id="previewInstagram" class="preview-body muted">Generate to preview.</div>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head">X</div>
+        <div id="previewX" class="preview-body muted">Generate to preview.</div>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head">Facebook</div>
+        <div id="previewFacebook" class="preview-body muted">Generate to preview.</div>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head">LinkedIn</div>
+        <div id="previewLinkedIn" class="preview-body muted">Generate to preview.</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Variations Drawer -->
+  <!--<div id="variationsDrawer" class="drawer" hidden>
+    <div class="drawer-inner">
+      <div class="drawer-head">
+        <div class="drawer-title">Variations</div>
+        <button id="btnCloseDrawer" class="drawer-close" type="button">✕</button>
+      </div>
+
+      <div id="variationsList" class="variations-list"></div>
+    </div>
+  </div>-->
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/posting.js' %}"></script>
+{% endblock %}

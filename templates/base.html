@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ForgeStudio{% endblock %}</title>
+
+  <!-- Fonts (forge/fantasy vibe, still readable) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+  <!-- Per-page CSS hook -->
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Animated ember canvas -->
+  <canvas id="ember-canvas" aria-hidden="true"></canvas>
+
+  {% include "components/navbar.html" %}
+
+  <main class="app-shell">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global JS -->
+  <script src="{% static 'js/embers.js' %}"></script>
+
+  <!-- Per-page JS hook -->
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

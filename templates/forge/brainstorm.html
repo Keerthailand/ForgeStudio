@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Forge Mode — Brainstorm{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forge.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+  <header class="tool-header">
+    <h1>Forge Mode: Brainstorm</h1>
+    <p>No typing — just choose. We’ll recommend your best next move.</p>
+  </header>
+
+  <div class="flow-grid">
+    <div class="flow-panel">
+      <div class="flow-progress">
+        <div class="flow-step" id="stepLabel">Step 1 of 5</div>
+        <div class="flow-bar"><div class="flow-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="flow-question" id="questionText">What’s your primary goal?</div>
+      <div class="flow-options" id="optionsWrap"></div>
+
+      <div class="flow-actions">
+        <button class="btn btn-secondary" id="btnBack" disabled>Back</button>
+        <button class="btn btn-primary" id="btnRestart">Restart</button>
+      </div>
+      <div class="error-bar" id="errorBar" hidden></div>
+    </div>
+
+    <aside class="result-panel">
+      <div class="result-title">Results</div>
+      <div class="result-box muted" id="resultBox">Complete the flow to see recommendations.</div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/forge_brainstorm.js' %}"></script>
+{% endblock %}
