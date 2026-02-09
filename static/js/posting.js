@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function generate() {
       clearError();
       const prompt = (promptInput.value || "").trim();
+      promptInput.value = "";
       if (!prompt) {
         showError("Type a prompt first — give me something to forge 🔥");
         return;

@@ -76,6 +76,15 @@
       <div id="variantsList" class="variations-list"></div>
     </div>
   </div>
+
+  <!-- ✅ Image Preview Modal -->
+  <div id="imagePreviewModal" class="modal" hidden>
+    <div class="modal-overlay" data-close="true"></div>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-label="Image preview">
+      <button id="closePreviewModal" class="modal-close" aria-label="Close preview">✕</button>
+      <img id="previewImage" src="" alt="Preview image" />
+    </div>
+  </div>
 </section>
 {% endblock %}
 

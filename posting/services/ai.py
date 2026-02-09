@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-import os
-
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+from core.services.image_gen import generate_image_to_media
 
 
 @dataclass
@@ -12,8 +10,9 @@ class PostingResult:
     facebook: str
     linkedin: str
     image_prompt: str
-    image_url: str
+    image_url: str  # can be None if generation fails
     variants: list
+
 
 def build_posting_prompts(user_prompt: str) -> dict:
     system = (
@@ -39,24 +38,37 @@ def build_posting_prompts(user_prompt: str) -> dict:
     )
 
     image_prompt = (
-        "Create a single-line image generation prompt for a social media graphic that matches the idea. "
-        "Style: fantasy forge / medieval blacksmith aesthetic, cinematic lighting, warm oranges, sparks, embers. "
-        "Keep it safe and non-offensive."
-    )
+        "Professional Instagram-style social media graphic. "
+        "Clean, modern design, high contrast, strong visual hierarchy. "
+        "Never use blacksmith theme."
+        "Never use fire."
+        "All images should not include a combination of dark colors, use only if specified."
+        "No text, no logos, no watermarks. "
+        "Visual theme should closely match this concept: {user_prompt}"
+)
+
 
     return {"system": system, "user": user, "image_prompt": image_prompt}
 
+
+def _safe_generate_image(prompt: str):
+    try:
+        img = generate_image_to_media(prompt, size="1024x1024")
+        return img.get("url")
+    except Exception:
+        return None
+
+
 def generate_post_with_image(user_prompt: str) -> PostingResult:
     """
-    For now this returns deterministic mock content, but the prompts above are correct and ready.
-    Replace the mock body with your OpenAI call when your key + library are wired.
+    Generates platform-specific post text + a real generated image saved in MEDIA_ROOT.
+    (Text is still mock here; swap in your OpenAI chat call when ready.)
     """
-    user_prompt = (user_prompt)
+    user_prompt = (user_prompt or "").strip()
 
-    # Friendly assistant wrapper message
     assistant_message = (
         "Got it 🔥 I’m heating this up in the forge now.\n"
-        "Here’s a polished set of posts — plus a matching image concept."
+        "Here’s a polished set of posts — plus a matching image."
     )
 
     # Mock platform text (replace with model output)
@@ -65,9 +77,13 @@ def generate_post_with_image(user_prompt: str) -> PostingResult:
     facebook = f"{user_prompt}\n\nIf you want, tell me your audience and I’ll tune the tone even tighter."
     linkedin = f"{user_prompt}\n\n• Clear value\n• Strong hook\n• Simple CTA\n\n#marketing #content"
 
-    # Image prompt and placeholder image URL
-    image_prompt = f"Cinematic fantasy forge scene, glowing embers, warm orange light, blacksmith workspace, social media graphic, {user_prompt}"
-    image_url = "https://via.placeholder.com/1024x1024.png?text=AI+Image+Placeholder"
+    # Real image generation
+    image_prompt = (
+        "Fantasy forge / medieval blacksmith social media graphic, cinematic lighting, "
+        "warm orange embers and sparks, dark metal textures, clean composition, "
+        f"theme: {user_prompt}, no text, no logos"
+    )
+    image_url = _safe_generate_image(image_prompt)
 
     variants = [
         {

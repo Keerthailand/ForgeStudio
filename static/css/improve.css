@@ -97,3 +97,129 @@
     background: rgba(255,106,0,0.20);
   }
   
+  body.no-scroll {
+    overflow: hidden;
+  }
+  
+  /* Modal */
+  .modal[hidden] {
+    display: none;
+  }
+  
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+  }
+  
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+  }
+  
+  .modal-content {
+    position: relative;
+    max-width: 900px;
+    width: calc(100% - 32px);
+    margin: 5vh auto;
+    background: #111;
+    border: 1px solid rgba(255, 140, 0, 0.35);
+    box-shadow: 0 0 30px rgba(255, 140, 0, 0.12);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 140, 0, 0.4);
+    background: rgba(0, 0, 0, 0.35);
+    color: #ffb25a;
+    cursor: pointer;
+  }
+  
+  .modal-close:hover {
+    border-color: rgba(255, 140, 0, 0.8);
+  }
+  
+  #previewImage {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 140, 0, 0.18);
+  }
+/* Prevent page scroll while modal open */
+body.no-scroll { overflow: hidden; }
+
+/* Side card thumbnails (small) */
+.side-thumb-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.side-thumb-btn {
+  width: 92px;          /* small */
+  height: 92px;         /* small */
+  padding: 0;
+  border: 1px solid rgba(255,140,0,0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+.side-thumb-btn:hover {
+  border-color: rgba(255,140,0,0.6);
+}
+
+.side-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.side-thumb-missing {
+  width: 92px;
+  height: 92px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255,140,0,0.25);
+  color: #b7b7c2;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  background: rgba(0,0,0,0.15);
+}
+/* Small thumbnail loading state */
+.side-thumb-loading {
+  width: 92px;
+  height: 92px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255,140,0,0.25);
+  color: #b7b7c2;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  font-size: 12px;
+  background: rgba(0,0,0,0.15);
+}
+
+.side-thumb-loading .spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,140,0,0.25);
+  border-top-color: rgba(255,140,0,0.9);
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
