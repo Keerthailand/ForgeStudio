@@ -2,6 +2,9 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from core.services.image_gen import generate_image_to_media
+
 
 from .services.ai import improve_content_with_variants
 from .services.file_readers import extract_text_from_upload
@@ -51,3 +54,24 @@ def improve_analyze(request):
             {"error": "Something went wrong while improving your content. Try again."},
             status=500
         )
+
+@require_POST
+def improve_generate_image(request):
+    """
+    Expects application/json:
+      { "image_prompt": "..." }
+
+    Returns:
+      { "image_url": "/media/generated/xyz.png" }
+    """
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+        image_prompt = (payload.get("image_prompt") or "").strip()
+
+        if not image_prompt:
+            return JsonResponse({"error": "Missing image_prompt"}, status=400)
+
+        out = generate_image_to_media(image_prompt, size="512x512")
+        return JsonResponse({"image_url": out["url"]})
+    except Exception:
+        return JsonResponse({"error": "Image generation failed."}, status=500)

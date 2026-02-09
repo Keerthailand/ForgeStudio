@@ -248,11 +248,7 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
         assistant_message = "Got it 🔥 I tightened the writing and forged three strong options you can choose from."
 
     # --------- Generate images (locked budget settings via your image_gen.py) ----------
-    for v in variants_out:
-        try:
-            img = generate_image_to_media(v["image_prompt"], size="512x512")
-            v["image_url"] = img.get("url") or ""
-        except Exception:
-            v["image_url"] = ""
+    v["image_url"] = ""
+
 
     return {"assistant_message": assistant_message, "variants": variants_out}
