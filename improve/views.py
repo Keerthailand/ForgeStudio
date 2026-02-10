@@ -1,11 +1,11 @@
 import json
+import traceback
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
+
 from core.services.image_gen import generate_image_to_media
-
-
 from .services.ai import improve_content_with_variants
 from .services.file_readers import extract_text_from_upload
 
@@ -20,7 +20,7 @@ def improve_analyze(request):
     Expects multipart/form-data:
       - content (optional)
       - file (optional)
-      - goal (optional): what the user wants (e.g., "make it more professional")
+      - goal (optional)
     Returns JSON with:
       - assistant_message
       - variants: [{label, tone, improved_text, image_url, image_prompt}]
@@ -50,10 +50,12 @@ def improve_analyze(request):
         return JsonResponse(result)
 
     except Exception:
+        traceback.print_exc()
         return JsonResponse(
             {"error": "Something went wrong while improving your content. Try again."},
             status=500
         )
+
 
 @require_POST
 def improve_generate_image(request):
@@ -62,16 +64,28 @@ def improve_generate_image(request):
       { "image_prompt": "..." }
 
     Returns:
-      { "image_url": "/media/generated/xyz.png" }
+      { "image_url": "/media/generated/<uuid>.png" }
     """
     try:
-        payload = json.loads(request.body.decode("utf-8") or "{}")
+        # Parse JSON safely
+        try:
+            payload = json.loads(request.body.decode("utf-8") or "{}")
+        except Exception:
+            return JsonResponse({"error": "Invalid JSON body."}, status=400)
+
         image_prompt = (payload.get("image_prompt") or "").strip()
-
         if not image_prompt:
-            return JsonResponse({"error": "Missing image_prompt"}, status=400)
+            return JsonResponse({"error": "Missing image_prompt."}, status=400)
 
-        out = generate_image_to_media(image_prompt, size="512x512")
-        return JsonResponse({"image_url": out["url"]})
+        # Generate via your cost-safe image_gen.py (gpt-image-1-mini, medium, 512x512)
+        out = generate_image_to_media(image_prompt, size="auto")
+        image_url = out.get("url") or ""
+        if not image_url:
+            return JsonResponse({"error": "No image URL returned."}, status=500)
+
+        return JsonResponse({"image_url": image_url})
+
     except Exception:
+        # Print the *real* error to your runserver console
+        traceback.print_exc()
         return JsonResponse({"error": "Image generation failed."}, status=500)
