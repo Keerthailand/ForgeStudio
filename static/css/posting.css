@@ -128,4 +128,64 @@
   /* Optional: prevent background scroll while open */
   .no-scroll { overflow: hidden; }
 
-  
+  body.no-scroll { overflow: hidden; }
+
+.drawer[hidden] { display: none !important; }
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.drawer-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+}
+
+.drawer-inner {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: min(520px, 92vw);
+  background: #121216;
+  border-left: 1px solid rgba(255,140,0,0.25);
+  box-shadow: -20px 0 40px rgba(0,0,0,0.55);
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px;
+  border-bottom: 1px solid rgba(255,140,0,0.18);
+}
+
+.drawer-title {
+  font-weight: 800;
+  color: #f2f2f7;
+}
+
+.drawer-close {
+  background: transparent;
+  border: 1px solid rgba(255,140,0,0.25);
+  color: #ff8c00;
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.drawer-close:hover {
+  border-color: rgba(255,140,0,0.6);
+}
+
+.variations-list {
+  padding: 14px;
+  overflow: auto;
+}
+
+.drawer[hidden] { display: none !important; }

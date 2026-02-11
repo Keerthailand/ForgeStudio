@@ -67,17 +67,20 @@
     </aside>
   </div>
 
-  <!-- Variations Drawer -->
-  <!--<div id="variationsDrawer" class="drawer" hidden>
-    <div class="drawer-inner">
+<!-- Variations Drawer -->
+  <div id="variationsDrawer" class="drawer" hidden>
+    <div class="drawer-overlay" data-close="true"></div>
+
+    <div class="drawer-inner" role="dialog" aria-modal="true" aria-label="Variations">
       <div class="drawer-head">
         <div class="drawer-title">Variations</div>
-        <button id="btnCloseDrawer" class="drawer-close" type="button">✕</button>
+        <button id="btnCloseVariations" class="drawer-close" type="button" aria-label="Close">✕</button>
       </div>
 
       <div id="variationsList" class="variations-list"></div>
     </div>
-  </div>-->
+  </div>
+ 
 </section>
 {% endblock %}
 

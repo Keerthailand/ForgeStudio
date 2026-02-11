@@ -78,11 +78,15 @@ def generate_post_with_image(user_prompt: str) -> PostingResult:
     linkedin = f"{user_prompt}\n\n• Clear value\n• Strong hook\n• Simple CTA\n\n#marketing #content"
 
     # Real image generation
+# Image prompt (professional IG graphic by default — NOT forge-themed unless user implies it)
     image_prompt = (
-        "Fantasy forge / medieval blacksmith social media graphic, cinematic lighting, "
-        "warm orange embers and sparks, dark metal textures, clean composition, "
-        f"theme: {user_prompt}, no text, no logos"
+        "Professional Instagram-style social media graphic. "
+        "Clean, modern design, high contrast, strong visual hierarchy. "
+        "No text, no logos, no watermarks. "
+        f"Visual theme should closely match this concept: {user_prompt}"
     )
+
+
     image_url = _safe_generate_image(image_prompt)
 
     variants = [
