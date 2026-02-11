@@ -36,7 +36,14 @@ def improve_analyze(request):
         if uploaded_file:
             file_text, file_note = extract_text_from_upload(uploaded_file)
 
-        combined = "\n\n".join([x for x in [content, file_text] if x]).strip()
+        parts = []
+        if content:
+            parts.append(content)
+        if file_text:
+            # If it's an image analysis context, it already includes a label
+            parts.append(file_text)
+
+        combined = "\n\n".join(parts).strip()
 
         if not combined:
             return JsonResponse({"error": "Add text or upload a file to improve."}, status=400)

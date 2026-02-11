@@ -56,6 +56,92 @@ def _safe_json(raw: str) -> Optional[dict]:
     return None
 
 
+def _redact_names_for_image_prompts(text: str) -> str:
+    """
+    Optional guardrail: for image prompts, avoid using potentially copyrighted
+    character names directly. Replace with a generic description.
+
+    You can expand this list later if needed.
+    """
+    if not text:
+        return ""
+    # Example: if user says "Thorfinn", use a general description in image prompts
+    text = re.sub(r"\bthorfinn\b", "a young Viking warrior", text, flags=re.IGNORECASE)
+    return text.strip()
+
+
+def _extract_variant_concepts(client: OpenAI, user_content: str, user_goal: str) -> List[Dict[str, str]]:
+    """
+    Analyze the user's request and extract THREE distinct visual concepts
+    for Version A/B/C. This prevents sending the same combined prompt to all images.
+
+    Returns:
+      [{"label":"Version A","concept":"..."}, {"label":"Version B","concept":"..."}, {"label":"Version C","concept":"..."}]
+    """
+    text = (user_content or "").strip()
+    goal = (user_goal or "").strip()
+
+    system = (
+        "You are a prompt analyst. Extract variant requests from user text.\n"
+        "Return STRICT JSON only.\n"
+        "Rules:\n"
+        "- If user asks for multiple versions (e.g., cyberpunk / arctic / India), split them into separate concepts.\n"
+        "- Produce exactly 3 concepts mapped to Version A, Version B, Version C.\n"
+        "- If fewer than 3 are requested, invent additional distinct concepts consistent with the request.\n"
+        "- Concepts must be concise, visual-only, and MUST NOT include text/logos/watermarks.\n"
+        "- Do not use copyrighted character names; describe characters generically.\n"
+    )
+
+    payload = {
+        "user_text": text[:2500],
+        "user_goal": goal[:300],
+        "output_schema": {
+            "requested_variants": [
+                {"label": "Version A", "concept": "visual-only concept"},
+                {"label": "Version B", "concept": "visual-only concept"},
+                {"label": "Version C", "concept": "visual-only concept"},
+            ]
+        },
+    }
+
+    try:
+        resp = client.chat.completions.create(
+            model=TEXT_MODEL,
+            temperature=0.4,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": json.dumps(payload)},
+            ],
+        )
+        raw = resp.choices[0].message.content or ""
+        parsed = _safe_json(raw) or {}
+    except Exception:
+        parsed = {}
+
+    arr = parsed.get("requested_variants")
+    if not isinstance(arr, list) or len(arr) == 0:
+        # fallback: still provide three distinct settings
+        base = _redact_names_for_image_prompts(text[:600])
+        return [
+            {"label": "Version A", "concept": f"A bold cinematic version of: {base}"},
+            {"label": "Version B", "concept": f"A minimalist premium version of: {base}"},
+            {"label": "Version C", "concept": f"A friendly playful version of: {base}"},
+        ]
+
+    out: List[Dict[str, str]] = []
+    labels = ["Version A", "Version B", "Version C"]
+
+    for i, label in enumerate(labels):
+        item = arr[i] if i < len(arr) and isinstance(arr[i], dict) else {}
+        concept = (item.get("concept") or "").strip()
+        concept = _redact_names_for_image_prompts(concept)
+        if not concept:
+            concept = "A distinct visual-only version of the user's request"
+        out.append({"label": label, "concept": concept})
+
+    return out
+
+
 def _wrap_image_prompt(concept: str, user_content: str, user_goal: str, variant_label: str) -> str:
     """
     Forces each variant to have a distinct art direction.
@@ -65,11 +151,9 @@ def _wrap_image_prompt(concept: str, user_content: str, user_goal: str, variant_
     uc = (user_content or "").strip()
     ug = (user_goal or "").strip()
 
-    # Bound context
     uc_short = uc[:700]
     ug_short = ug[:200]
 
-    # Strongly distinct directions (palette + style + composition)
     presets = {
         "Version A": (
             "Art direction: Bold, high-energy, cinematic poster vibe. "
@@ -107,16 +191,12 @@ def _wrap_image_prompt(concept: str, user_content: str, user_goal: str, variant_
     if ug_short:
         prompt += f" User goal context: {ug_short}"
 
-    # Add a uniqueness cue so prompts don't collapse into the same look
     prompt += f" Unique cue: {variant_label}."
-
     return prompt.strip()
 
 
 def improve_content_with_variants(user_content: str, user_goal: str = "", file_note: str = "") -> Dict[str, Any]:
     """
-    Called by improve_analyze view.
-
     Returns JSON with:
       - assistant_message
       - variants: [{label, tone, improved_text, image_prompt, image_url}]
@@ -130,53 +210,40 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
 
     client = _get_client()
 
-    # --------- No API key fallback (text-only, prompts still varied) ----------
+    # --------- No API key fallback ----------
     if client is None:
         base = _sanitize_no_profanity(user_content[:1200])
-        variants = [
-            {
-                "label": "Version A",
-                "tone": "Bold + engaging",
-                "improved_text": f"{base}\n\n(Upgrade: punchier hook, stronger flow, clearer call-to-action.)",
-                "image_prompt": _wrap_image_prompt(
-                    "Bold, energetic visual concept matching the content",
-                    user_content,
-                    user_goal,
-                    "Version A",
-                ),
-                "image_url": "",
-            },
-            {
-                "label": "Version B",
-                "tone": "Clean + professional",
-                "improved_text": f"{base}\n\n(Upgrade: structured, concise, professional wording.)",
-                "image_prompt": _wrap_image_prompt(
-                    "Clean, premium professional visual concept matching the content",
-                    user_content,
-                    user_goal,
-                    "Version B",
-                ),
-                "image_url": "",
-            },
-            {
-                "label": "Version C",
-                "tone": "Friendly + conversational",
-                "improved_text": f"{base}\n\n(Upgrade: warmer, conversational tone.)",
-                "image_prompt": _wrap_image_prompt(
-                    "Friendly, approachable visual concept matching the content",
-                    user_content,
-                    user_goal,
-                    "Version C",
-                ),
-                "image_url": "",
-            },
-        ]
         return {
             "assistant_message": "I don’t see an OpenAI key set, but here are three draft variants to start with.",
-            "variants": variants,
+            "variants": [
+                {
+                    "label": "Version A",
+                    "tone": "Bold + engaging",
+                    "improved_text": f"{base}\n\n(Upgrade: punchier hook, stronger flow, clearer call-to-action.)",
+                    "image_prompt": _wrap_image_prompt("Bold cinematic version of the idea", user_content, user_goal, "Version A"),
+                    "image_url": "",
+                },
+                {
+                    "label": "Version B",
+                    "tone": "Clean + professional",
+                    "improved_text": f"{base}\n\n(Upgrade: structured, concise, professional wording.)",
+                    "image_prompt": _wrap_image_prompt("Minimal premium version of the idea", user_content, user_goal, "Version B"),
+                    "image_url": "",
+                },
+                {
+                    "label": "Version C",
+                    "tone": "Friendly + conversational",
+                    "improved_text": f"{base}\n\n(Upgrade: warmer, conversational tone.)",
+                    "image_prompt": _wrap_image_prompt("Friendly playful version of the idea", user_content, user_goal, "Version C"),
+                    "image_url": "",
+                },
+            ],
         }
 
-    # --------- OpenAI: JSON-only (3 variants + 3 DISTINCT image concepts) ----------
+    # ✅ NEW: extract 3 distinct image concepts first (splits multi-version requests)
+    variant_concepts = _extract_variant_concepts(client, user_content, user_goal)
+
+    # --------- OpenAI: JSON-only writing variants ----------
     goal_text = user_goal or "Improve clarity, structure, and impact while staying true to the original meaning."
     note_text = f"(File note: {file_note})" if file_note else ""
 
@@ -187,12 +254,7 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
         "2) Preserve meaning; improve clarity, structure, and persuasion.\n"
         "3) No medical/legal claims. No unsafe instructions.\n"
         "4) Provide exactly 3 variants: A bold/engaging, B clean/professional, C friendly/conversational.\n"
-        "5) Provide a short image concept for each (visual-only). Do NOT request text/logos/watermarks.\n"
-        "6) The three image_concept values must be VERY DIFFERENT:\n"
-        "   - Different palette (not all dark/orange)\n"
-        "   - Different composition (close-up vs wide vs abstract)\n"
-        "   - Different style (cinematic vs minimalist vs playful)\n"
-        "7) Output must be valid JSON only. No extra commentary outside JSON.\n"
+        "5) Output must be valid JSON only. No extra commentary outside JSON.\n"
     )
 
     prompt_obj = {
@@ -202,24 +264,9 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
         "required_output": {
             "assistant_message": "short, friendly explanation of what you changed",
             "variants": [
-                {
-                    "label": "Version A",
-                    "tone": "Bold + engaging",
-                    "improved_text": "string",
-                    "image_concept": "visual-only concept (no text/logos/watermarks) - cinematic/poster style",
-                },
-                {
-                    "label": "Version B",
-                    "tone": "Clean + professional",
-                    "improved_text": "string",
-                    "image_concept": "visual-only concept (no text/logos/watermarks) - minimalist/brand style",
-                },
-                {
-                    "label": "Version C",
-                    "tone": "Friendly + conversational",
-                    "improved_text": "string",
-                    "image_concept": "visual-only concept (no text/logos/watermarks) - playful/approachable style",
-                },
+                {"label": "Version A", "tone": "Bold + engaging", "improved_text": "string"},
+                {"label": "Version B", "tone": "Clean + professional", "improved_text": "string"},
+                {"label": "Version C", "tone": "Friendly + conversational", "improved_text": "string"},
             ],
         },
     }
@@ -227,7 +274,7 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
     try:
         resp = client.chat.completions.create(
             model=TEXT_MODEL,
-            temperature=0.85,  # a bit higher to help diversity
+            temperature=0.7,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": json.dumps(prompt_obj)},
@@ -242,26 +289,24 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
     variants_in = parsed.get("variants") if isinstance(parsed.get("variants"), list) else []
 
     fallback_defs = [
-        ("Version A", "Bold + engaging", "Cinematic, energetic poster-style concept"),
-        ("Version B", "Clean + professional", "Minimalist, premium brand-style concept"),
-        ("Version C", "Friendly + conversational", "Playful, friendly illustration-style concept"),
+        ("Version A", "Bold + engaging"),
+        ("Version B", "Clean + professional"),
+        ("Version C", "Friendly + conversational"),
     ]
 
     variants_out: List[Dict[str, Any]] = []
 
     for i in range(3):
-        label, tone, fallback_concept = fallback_defs[i]
+        label, tone = fallback_defs[i]
         v = variants_in[i] if i < len(variants_in) and isinstance(variants_in[i], dict) else {}
 
         improved_text = _sanitize_no_profanity(v.get("improved_text") or "")
-        image_concept = (v.get("image_concept") or "").strip()
-
         if not improved_text:
             improved_text = _sanitize_no_profanity(user_content[:1400])
-        if not image_concept:
-            image_concept = fallback_concept
 
-        image_prompt = _wrap_image_prompt(image_concept, user_content, user_goal, label)
+        # ✅ Use the parsed concept for THIS label
+        concept_for_label = variant_concepts[i]["concept"]
+        image_prompt = _wrap_image_prompt(concept_for_label, user_content, user_goal, label)
 
         variants_out.append(
             {
@@ -269,7 +314,7 @@ def improve_content_with_variants(user_content: str, user_goal: str = "", file_n
                 "tone": tone,
                 "improved_text": improved_text,
                 "image_prompt": image_prompt,
-                "image_url": "",  # generated later (sequential endpoint)
+                "image_url": "",  # generated later
             }
         )
 
